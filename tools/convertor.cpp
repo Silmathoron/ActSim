@@ -91,7 +91,16 @@ std::map<std::string, var> convertParam(py::object xmlRoot)
  * *********************** */
 
 csr Convertor::makeConnectMat(py::object csrData) {
-	
+	vector<double> vecData = stdlist_to_vec<double>(csrData[0]);
+	vector<int> vecIndPtr = stdlist_to_vec<int>(csrData[1]);
+	vector<int> vecIndices = stdlist_to_vec<int>(csrData[2]);
+	csr matConnect;
+	for (int i=0; i<vecIndices.size(); ++i) {
+		for (int j=vecIndPtr[i]; j<vecIndPtr[i+1]; ++j) {
+			matConnect(i,vecIndices[j]) = vecData[j];
+		}
+	}
+	return matConnect;
 }
 
 
