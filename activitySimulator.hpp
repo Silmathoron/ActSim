@@ -36,7 +36,9 @@ class Simulator {
 		void runSimulation();
 		// main objects
 		std::map<std::string, var> m_mapParam;
-		csr m_connectMat;
+		std::vector<int> m_vecIndPtr;
+		std::vector<int> m_vecIndices;
+		std::vector<double> m_vecData;
 		// the neuron parameters
 		m_rThreshold;
 		m_rIntCst;
