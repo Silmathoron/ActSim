@@ -23,19 +23,31 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=3
+current_page=5
 FILE_NAME_0=0;Python;0;EUTF-8;1;1;1;%2Fhome%2Fsilmathoron%2FDocuments%2FEtudes%2FNeurones%2FStageDominey%2FGit%2FActSim%2FargParse.py;0;4
 FILE_NAME_1=0;Python;0;EUTF-8;1;1;1;%2Fhome%2Fsilmathoron%2FDocuments%2FEtudes%2FNeurones%2FStageDominey%2FGit%2FActSim%2FgraphClass.py;0;4
 FILE_NAME_2=0;Python;0;EUTF-8;1;1;1;%2Fhome%2Fsilmathoron%2FDocuments%2FEtudes%2FNeurones%2FStageDominey%2FGit%2FActSim%2Fmain.py;0;4
-FILE_NAME_3=670;C++;0;EUTF-8;1;1;1;%2Fhome%2Fsilmathoron%2FDocuments%2FEtudes%2FNeurones%2FStageDominey%2FGit%2FActSim%2FactivitySimulator.hpp;0;4
-FILE_NAME_4=244;C++;0;EUTF-8;1;1;1;%2Fhome%2Fsilmathoron%2FDocuments%2FEtudes%2FNeurones%2FStageDominey%2FGit%2FActSim%2FactivitySimulator.cpp;0;4
-FILE_NAME_5=2672;C++;0;EUTF-8;1;1;1;%2Fhome%2Fsilmathoron%2FDocuments%2FEtudes%2FNeurones%2FStageDominey%2FGit%2FActSim%2Ftools%2Fconvertor.cpp;0;4
-FILE_NAME_6=0;C++;0;EUTF-8;1;1;1;%2Fhome%2Fsilmathoron%2FDocuments%2FEtudes%2FNeurones%2FStageDominey%2FGit%2FActSim%2Ftools%2Fconvertor.hpp;0;4
+FILE_NAME_3=32;C++;0;EUTF-8;1;1;1;%2Fhome%2Fsilmathoron%2FDocuments%2FEtudes%2FNeurones%2FStageDominey%2FGit%2FActSim%2FactivitySimulator.hpp;0;4
+FILE_NAME_4=345;C++;0;EUTF-8;1;1;1;%2Fhome%2Fsilmathoron%2FDocuments%2FEtudes%2FNeurones%2FStageDominey%2FGit%2FActSim%2FactivitySimulator.cpp;0;4
+FILE_NAME_5=3112;C++;0;EUTF-8;1;1;1;%2Fhome%2Fsilmathoron%2FDocuments%2FEtudes%2FNeurones%2FStageDominey%2FGit%2FActSim%2Ftools%2Fconvertor.cpp;0;4
+FILE_NAME_6=1307;C++;0;EUTF-8;1;1;1;%2Fhome%2Fsilmathoron%2FDocuments%2FEtudes%2FNeurones%2FStageDominey%2FGit%2FActSim%2Ftools%2Fconvertor.hpp;0;4
+FILE_NAME_7=567;C++;0;EUTF-8;1;1;1;%2Fusr%2Flocal%2Finclude%2Fboost%2Fpython%2Fraw_function.hpp;0;4
+FILE_NAME_8=0;C++;0;EUTF-8;1;1;1;%2Fhome%2Fsilmathoron%2FDocuments%2FEtudes%2FNeurones%2FStageDominey%2FColabNico%2FInterfacingPyC%2B%2B%2FBoostMPI_MWE%2Fbroker.cpp;0;4
 
 [VTE]
 last_dir=/home
 
 [build-menu]
 NF_00_LB=_Make
-NF_00_CM=cd build && cmake ..
+NF_00_CM=cd build && make
 NF_00_WD=
+C++FT_00_LB=_Compiler
+C++FT_00_CM=cd build && cmake .. 
+C++FT_00_WD=
+C++FT_01_LB=Const_ruire
+C++FT_01_CM=cd build && cmake .. 
+C++FT_01_WD=
+C++FT_02_LB=MPI
+C++FT_02_CM=cd build && cmake .. 
+C++FT_02_WD=
+filetypes=C++;

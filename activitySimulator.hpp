@@ -4,11 +4,12 @@
 #include <boost/python.hpp>
 #include <boost/variant.hpp>
 
+#include "tools/convertor.hpp"
+
 
 namespace py = boost::python;
 
 typedef boost::variant<double, std::string, int, bool> var;
-typedef boost::numeric::ublas::compressed_matrix<double> csr;
 typedef std::map<std::string, var>::iterator it_mapParam;
 
 
@@ -21,7 +22,7 @@ typedef std::map<std::string, var>::iterator it_mapParam;
 class Simulator {
 	
 	public:
-		Simulator(csr connectMat, std::map<std::string, var> mapParam);
+		Simulator(int numNeurons, std::vector<size_t> vecIndPtr, std::vector<int> vecIndices, std::vector<double> vecData, std::map<std::string, var> mapParam);
 		~Simulator();
 		// set parameters
 		void setParam();
@@ -34,21 +35,25 @@ class Simulator {
 		Convertor m_convertor;
 		// simulation
 		void runSimulation();
+		std::vector<double> initPotential();
+		bool m_bRunning;
 		// main objects
 		std::map<std::string, var> m_mapParam;
-		std::vector<int> m_vecIndPtr;
+		std::vector<size_t> m_vecIndPtr;
 		std::vector<int> m_vecIndices;
 		std::vector<double> m_vecData;
+		// network parameters
+		int m_nNeurons;
 		// the neuron parameters
-		m_rThreshold;
-		m_rIntCst;
-		m_rLeak;
-		m_rRefrac;
-		m_nRefrac;
+		double m_rThreshold;
+		double m_rIntCst;
+		double m_rLeak;
+		double m_rRefrac;
+		int m_nRefrac;
 		// the simulation parameters
-		m_rSimulTime;
-		m_rTimeStep;
-		m_nTotStep;
+		double m_rSimulTime;
+		double m_rTimeStep;
+		int m_nTotStep;
 };
 
 #endif
