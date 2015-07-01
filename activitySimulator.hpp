@@ -4,8 +4,11 @@
 #include <boost/python.hpp>
 #include <boost/variant.hpp>
 
+#include <boost/numeric/ublas/vector.hpp>
+
 
 namespace py = boost::python;
+namespace ublas = boost::numeric::ublas
 
 typedef boost::variant<double, std::string, int, bool> var;
 typedef boost::numeric::ublas::compressed_matrix<double> csr;
@@ -34,19 +37,26 @@ class Simulator {
 		Convertor m_convertor;
 		// simulation
 		void runSimulation();
+		ublas::vector<double> initPotential();
+		void initDeviceContainers(	d_vecPotential,	d_vecNoise,
+									d_vecThreshold, d_vecActive,
+									d_vecRefractory, d_matConnect,
+									d_matActionPotentials );
 		// main objects
 		std::map<std::string, var> m_mapParam;
-		csr m_connectMat;
+		csr m_matConnect;
+		// the network's parameters
+		int m_nNeurons;
 		// the neuron parameters
-		m_rThreshold;
-		m_rIntCst;
-		m_rLeak;
-		m_rRefrac;
-		m_nRefrac;
+		double m_rThreshold;
+		double m_rIntCst;
+		double m_rLeak;
+		double m_rRefrac;
+		int m_nRefrac;
 		// the simulation parameters
-		m_rSimulTime;
-		m_rTimeStep;
-		m_nTotStep;
+		double m_rSimulTime;
+		int m_rTimeStep;
+		int m_nTotStep;
 };
 
 #endif
