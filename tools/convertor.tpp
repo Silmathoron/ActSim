@@ -1,12 +1,13 @@
 /*
- * APy/C++ converter for ActSim, template file
+ * A Py/C++ converter for ActSim, template file
  */
+ 
+//# include "convertor.hpp"
 
-template<class T>
-py::list Convertor::vec_to_list(const std::vector<T>& v)
+// for a list of extractible boost types
+template< typename T >
+std::vector<T> Convertor::stdlist_to_vec(const py::object& iterable)
 {
-	py::object get_iter = py::iterator<std::vector<T> >();
-	py::object iter = get_iter(v);
-	py::list l(iter);
-	return l;
+	return std::vector<T>(	py::stl_input_iterator<T>(iterable),
+							py::stl_input_iterator<T>() );
 }

@@ -7,8 +7,7 @@
 #include <Python.h>
 #include <boost/python.hpp>
 #include <boost/variant.hpp>
-
-#include <boost/numeric/ublas/matrix_sparse.hpp>
+#include <boost/python/stl_iterator.hpp>
 
 namespace py = boost::python;
 
@@ -41,6 +40,8 @@ class Convertor {
 		var castFromString(std::string strType, std::string value);
 		bool boolFromString(std::string strValue);
 		// complex converters
+		template< typename T >
+		std::vector<T> stdlist_to_vec(const py::object& iterable);
 		py::list vec_to_list(const std::vector<var>& v);
 		struct handler : boost::static_visitor<var> {
 			var operator()(double d) const;
@@ -52,6 +53,6 @@ class Convertor {
 		std::string parse_python_exception();		
 };
 
-//#include "Convertor.tpp" // not useful anymore since I got rid of the template
+#include "convertor.tpp"
 
 #endif

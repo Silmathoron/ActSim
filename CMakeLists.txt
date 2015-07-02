@@ -10,9 +10,12 @@ include_directories(${PYTHON_INCLUDE_DIRS})
 #find_package(MPI REQUIRED)
 #include_directories(${MPI_INCLUDE_PATH})
 
-find_package(Boost 1.58.0 COMPONENTS python REQUIRED)
+find_package(Boost 1.58.0 COMPONENTS python system REQUIRED)
 set(Boost_INCLUDE_DIR /usr/local/include)
 include_directories(${Boost_INCLUDE_DIRS})
+
+find_package(OpenCL)
+include_directories(${OPENCL_INCLUDE_DIR})
 
 set(vexCL_INCLUDE_DIR /usr/include/vexcl)
 include_directories(${vexCL_INCLUDE_DIR})
@@ -25,5 +28,5 @@ set(SOURCES activitySimulator.cpp tools/convertor.cpp)
 set(HEADER_FILES activitySimulator.hpp tools/convertor.hpp)
 
 # Make the program
-add_executable(simulator ${SOURCES} ${HEADER_FILES})
-target_link_libraries(simulator ${Boost_LIBRARIES} ${MPI_LIBRARIES} ${PYTHON_LIBRARIES})
+add_library(simulator SHARED ${SOURCES} ${HEADER_FILES})
+target_link_libraries(simulator ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} ${OPENCL_LIBRARIES})

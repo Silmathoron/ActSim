@@ -16,20 +16,39 @@ indent_mode=2
 name=ActSim
 base_path=/home/mpi/Documents/ActSim
 description=
+file_patterns=
 
 [long line marker]
 long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=5
-FILE_NAME_0=827;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmpi%2FDocuments%2FActSim%2FactivitySimulator.hpp;0;4
-FILE_NAME_1=1773;Python;0;EUTF-8;1;1;0;%2Fhome%2Fmpi%2FDocuments%2FActSim%2FargParse.py;0;4
-FILE_NAME_2=0;Python;0;EUTF-8;1;1;0;%2Fhome%2Fmpi%2FDocuments%2FActSim%2FgraphClass.py;0;4
-FILE_NAME_3=0;Python;0;EUTF-8;1;1;0;%2Fhome%2Fmpi%2FDocuments%2FActSim%2Fmain.py;0;4
-FILE_NAME_4=2466;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmpi%2FDocuments%2FActSim%2Ftools%2Fconvertor.cpp;0;4
-FILE_NAME_5=1190;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmpi%2FDocuments%2FActSim%2Ftools%2Fconvertor.hpp;0;4
-FILE_NAME_6=586;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmpi%2FDocuments%2FActSim%2FactivitySimulator.cpp;0;4
+current_page=12
+FILE_NAME_0=580;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmpi%2FDocuments%2FActSim%2FactivitySimulator.hpp;0;4
+FILE_NAME_1=1710;Python;0;EUTF-8;1;1;0;%2Fhome%2Fmpi%2FDocuments%2FActSim%2FargParse.py;0;4
+FILE_NAME_2=98;Python;0;EUTF-8;1;1;0;%2Fhome%2Fmpi%2FDocuments%2FActSim%2FgraphClass.py;0;4
+FILE_NAME_3=1258;Python;0;EUTF-8;1;1;0;%2Fhome%2Fmpi%2FDocuments%2FActSim%2Fmain.py;0;4
+FILE_NAME_4=2556;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmpi%2FDocuments%2FActSim%2Ftools%2Fconvertor.cpp;0;4
+FILE_NAME_5=188;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmpi%2FDocuments%2FActSim%2Ftools%2Fconvertor.hpp;0;4
+FILE_NAME_6=4003;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmpi%2FDocuments%2FActSim%2FactivitySimulator.cpp;0;4
+FILE_NAME_7=59;None;0;EUTF-8;1;1;0;%2Fhome%2Fmpi%2FDocuments%2FActSim%2Ftools%2Fconvertor.tpp;0;4
+FILE_NAME_8=931;CMake;0;EUTF-8;1;1;0;%2Fhome%2Fmpi%2FDocuments%2FActSim%2FCMakeLists.txt;0;4
+FILE_NAME_9=390;XML;0;EUTF-8;1;1;0;%2Fhome%2Fmpi%2FDocuments%2FActSim%2Fdata%2Fparam.xml;0;4
+FILE_NAME_10=1271;Python;0;EUTF-8;1;1;0;%2Fhome%2Fmpi%2FDocuments%2FActSim%2Ftools%2FxmlTools.py;0;4
+FILE_NAME_11=624;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmpi%2FTéléchargements%2Fvexcl%2Ftuto%2Fbasics1.cpp;0;4
+FILE_NAME_12=3189;C++;0;EUTF-8;1;1;0;%2Fhome%2Fmpi%2FTéléchargements%2Fvexcl%2Ftuto%2FviennaCL.cpp;0;4
 
 [VTE]
 last_dir=/home
+
+[build-menu]
+NF_00_LB=_Make
+NF_00_CM=cd build && make -j 4
+NF_00_WD=
+C++FT_00_LB=_Compiler
+C++FT_00_CM=cd build && cmake ..
+C++FT_00_WD=
+filetypes=C++;
+EX_00_LB=_Exécuter
+EX_00_CM=python main.py
+EX_00_WD=

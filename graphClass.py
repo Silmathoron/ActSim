@@ -9,6 +9,7 @@ from graphTools import  genGraphER, genGraphFS, genGraphEDR
 
 import numpy as np
 from graph_tool import *
+from graph_tool.spectral import adjacency
 from copy import deepcopy
 
 
@@ -92,7 +93,7 @@ class GraphClass:
 			for key,value in self.dicProperties.items():
 				if (key != "Type") and (key != "Weighted") and (value.__class__ != dict):
 					string += key[0] + str(value)
-			self.dicProperties["Name"] = string + "_" + str(idx)
+			self.dicProperties["Name"] = string
 
 	def setDicProp(self,dicProp):
 		for strKey,value in dicProp.items():
@@ -122,6 +123,12 @@ class GraphClass:
 
 	def isWeighted(self):
 		return self.dicProperties["Weighted"]
+	
+	def getAdjacency(self):
+		if self.isWeighted():
+			return adjacency(self.graph, self.graph.edge_properties["weight"])
+		else:
+			return adjacency(self.graph)
 
 	#----------#
 	# Updating #

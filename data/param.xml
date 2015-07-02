@@ -1,0 +1,16 @@
+<parameters>
+	<simulParam>
+		<float name="timestep">0.001</float>
+		<float name="duration">300</float>
+	</simulParam>
+	<neuronParam>
+		<float name="h">0.2</float>
+		<float name="g">1.5</float>
+		<int name="whatever">42</int>
+	</neuronParam>
+	<netParam>
+		<string name="Type">Erdos-Renyi</string>
+		<int name="Nodes">1000</int>
+		<float name="Density">0.01</float>
+	</netParam>
+</parameters>

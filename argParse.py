@@ -3,6 +3,10 @@
 
 """ ArgumentParser for AlgoGen """
 
+import sys
+sys.path.append("tools/")
+from xmlTools import strToBool, xmlToDict
+
 import argparse
 import shutil
 import xml.etree.ElementTree as xmlet
@@ -40,12 +44,8 @@ class ArgParser(argparse.ArgumentParser):
 		self.dicType = {"float": float,
 						"int": int,
 						"str": str,
-						"bool": self.strToBool}
-		self.simulParam = None
-		self.neuronParam = None
-		self.netParam = None
-		# parse all arguments
-		self.parseArgs()
+						"bool": strToBool}
+		self.xmlRoot = None
 
 	#-------#
 	# Parse #
@@ -53,7 +53,7 @@ class ArgParser(argparse.ArgumentParser):
 	def parseArgs(self):
 		""" call the argparse command, then apply args """
 		self.args = self.parse_args()
-		self.getParameters()
+		self._getParameters()
 
 	#--------------------#
 	# Process parameters #
@@ -61,15 +61,18 @@ class ArgParser(argparse.ArgumentParser):
 
 	## get XML parameters
 	
-	def getParameters(self):
+	def _getParameters(self):
 		""" process the xml file """
 		try:
 			tree = xmlet.parse(self.args.fromfile)
-			root = tree.getroot()
-			self.simulParam = root.find("simulParam")
-			self.neuronParam = root.find("neuronParam")
-			self.netParam = root.find("netParam")
+			self.xmlRoot = tree.getroot()
+			#~ self.simulParam = root.find("simulParam")
+			#~ self.neuronParam = root.find("neuronParam")
+			#~ self.netParam = root.find("netParam")
 		except Exception as e:
 			print(e)
 			raise IOError("There might be a problem with the required\
-			 XML file containing the parameters")
+XML file containing the parameters")
+		print(xmlToDict(self.xmlRoot[1],self.dicType))
+
+	

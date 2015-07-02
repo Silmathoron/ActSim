@@ -5,8 +5,8 @@
 
 #include "convertor.hpp"
 
+#include <iostream>
 #include <stdexcept>
-#include <boost/python/stl_iterator.hpp>
 
 
 /* ************************ *
@@ -20,6 +20,9 @@ Convertor::Convertor() {
 		m_mainModule = py::import("__main__");
 		m_mainNamespace = m_mainModule.attr("__dict__");
 		m_mainNamespace["sys"] = py::import("sys");
+		// import xml.etree.ElementTree
+		//~ m_mainNamespace["xmlet"] = py::import("import xml.etree.ElementTree");
+		//~ py::exec("class xmlet.Element(): pass\n",m_mainNamespace);
     }
     catch(py::error_already_set const &){
         std::string perror_str = parse_python_exception();
@@ -28,13 +31,13 @@ Convertor::Convertor() {
 }
 
 Convertor::~Convertor() {
-	try{
-        Py_Finalize();
-    }
-    catch(py::error_already_set const &){
-        std::string perror_str = parse_python_exception();
-        std::cout << "Error in Py_Finalize: " << perror_str << std::endl;
-    }
+	//~ try{
+        //~ Py_Finalize();
+    //~ }
+    //~ catch(py::error_already_set const &){
+        //~ std::string perror_str = parse_python_exception();
+        //~ std::cout << "Error in Py_Finalize: " << perror_str << std::endl;
+    //~ }
 }
 
 
@@ -64,7 +67,7 @@ bool Convertor::boolFromString(std::string strValue) {
  * XML parameter conversion *
  * ************************ */
 
-std::map<std::string, var> convertParam(py::object xmlRoot)
+std::map<std::string, var> Convertor::convertParam(py::object xmlRoot)
 {
 	std::map<std::string, var> mapParameters;
 	// iterate on all children
@@ -72,14 +75,19 @@ std::map<std::string, var> convertParam(py::object xmlRoot)
 	for (int i=0; i< nSize; ++i) {
 		// extract the tag and the name as strings
 		py::object child = py::object(xmlRoot[i]);
-		std::string tag = py::extract<std::string>(child.tag);
-		std::string name = py::extract<std::string>(child.attrib["name"]);
-		std::string text = py::extract<std::string>(child.text);
-		// get the value
-		var value = castFromString(tag, text);
-		// assign to the map
-		mapParameters[name] = value;
+		int nSubSize = py::len(child);
+		for (int j=0; j<nSubSize; ++j) {
+			py::object subChild = py::object(child[j]);
+			std::string tag = py::extract<std::string>(subChild.attr("tag"));
+			std::string name = py::extract<std::string>(subChild.attr("attrib")["name"]);
+			std::string text = py::extract<std::string>(subChild.attr("text"));
+			// get the value
+			var value = castFromString(tag, text);
+			// assign to the map
+			mapParameters[name] = value;
+		}
 	}
+	return mapParameters;
 }
 
 
@@ -88,7 +96,8 @@ std::map<std::string, var> convertParam(py::object xmlRoot)
  * ******************************* */
 
 int Convertor::getNumNeurons(py::object csrData) {
-	return csrData[0];
+	return py::extract<int>(csrData[0]);
+}
 
 std::vector<double> Convertor::getDataConnectMat(py::object csrData) {
 	return stdlist_to_vec<double>(csrData[1]);
@@ -117,20 +126,12 @@ py::list Convertor::vec_to_list(const std::vector<var>& v)
     return l;
 }
 
-/* tovec */
-
-// for a list of extractible boost types
-template< typename T >
-std::vector<T> Convertor::stdlist_to_vec(const py::object& iterable)
-{
-	return std::vector<T>(	py::stl_input_iterator<T>(iterable),
-							py::stl_input_iterator<T>() );
-}
+/* tovec */ //see also convertor.tpp
 
 // for a list of py objects (e.g. a list of lists)
 std::vector<py::object> pyobjlist_to_vec(py::object& list)
 {
-	std::vector<T> vec;
+	std::vector<py::object> vec;
 	int nSize = py::len(list);
 	for (int i=0; i< nSize; ++i) {
 		py::object newobj = py::object(list[i]);

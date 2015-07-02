@@ -16,7 +16,6 @@
 
 
 namespace py = boost::python;
-namespace ublas = boost::numeric::ublas
 
 
 /*
@@ -28,6 +27,10 @@ namespace ublas = boost::numeric::ublas
  * Constructor *
  * *********** */
 
+
+Simulator::Simulator() {
+	m_bRunning = false;
+}
 
 Simulator::Simulator(int numNeurons, std::vector<size_t> vecIndPtr, std::vector<int> vecIndices, std::vector<double> vecData, std::map<std::string, var> mapParam):
 	m_nNeurons(numNeurons), m_vecIndPtr(vecIndPtr), m_vecIndices(vecIndices), m_vecData(vecData), m_mapParam(mapParam) {
@@ -109,22 +112,21 @@ std::vector<double> Simulator::initPotential() {
 
 /*
  ***
- * Raw constructor (interface with Python)
+ * Constructor (interface with Python)
  ********************************************/
 
-py::object Simulator_init(py::tuple args, py::dict kwargs) {
+std::shared_ptr<Simulator> Simulator_py(py::list lstCSR, py::object xmlRoot) {
 	// create the convertor and create c++ arguments
-	py::object self = args[0];
-	py::object csrData = args[1];
-	py::object xmlParam = args[2];
 	Convertor convertor = Convertor();
-	int numNeurons = convertor.getNumNeurons(csrData);
-	std::vector<double> vecData = convertor.getDataConnectMat(csrData);
-	std::vector<size_t> vecIndPtr = convertor.getIndPtrConnectMat(csrData);
-	std::vector<int> vecIndices = convertor.getIndicesConnectMat(csrData);
-	std::map<std::string, var> mapParam = convertor.convertParam(xmlParam);
+	int numNeurons = convertor.getNumNeurons(lstCSR);
+	std::vector<double> vecData = convertor.getDataConnectMat(lstCSR);
+	std::vector<size_t> vecIndPtr = convertor.getIndPtrConnectMat(lstCSR);
+	std::vector<int> vecIndices = convertor.getIndicesConnectMat(lstCSR);
+	std::map<std::string, var> mapParam = convertor.convertParam(xmlRoot);
 	// call the constructor with the converted arguments
-	return self.attr("__init__")(vecData, vecIndPtr, vecIndices, mapParam);
+	return std::shared_ptr<Simulator>( 
+		new Simulator(numNeurons, vecIndPtr, vecIndices, vecData, mapParam)
+	);
 }
 
 
@@ -133,12 +135,11 @@ py::object Simulator_init(py::tuple args, py::dict kwargs) {
  * Python module declaration
  ********************************************/
 
-BOOST_PYTHON_MODULE(simulator) {
-	// using no_init postpones defining __init__ function until after
-	// raw_function for proper overload resolution order, since later
-	// defs get higher priority.
+BOOST_PYTHON_MODULE(libsimulator) {
+	// using no_init postpones defining __init__ function
 	py::class_<Simulator>("Simulator", py::no_init)
-		.def("__init__", py::raw_function(Simulator_init), "simulator")
-		.def(py::init<int, std::vector<size_t>, std::vector<int>, std::vector<double>, std::map<std::string, var>>()); // C++ constructor, shadowed by raw ctor
-		//.def_readwrite("number", &A::number_)
+		.def("__init__", py::make_constructor(&Simulator_py))
+		.def("setParam", &Simulator::setParam)
+		.def("start", &Simulator::start)
+	;
 }

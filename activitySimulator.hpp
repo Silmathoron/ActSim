@@ -8,7 +8,6 @@
 
 
 namespace py = boost::python;
-namespace ublas = boost::numeric::ublas
 
 typedef boost::variant<double, std::string, int, bool> var;
 typedef std::map<std::string, var>::iterator it_mapParam;
@@ -23,6 +22,7 @@ typedef std::map<std::string, var>::iterator it_mapParam;
 class Simulator {
 	
 	public:
+		Simulator();
 		Simulator(int numNeurons, std::vector<size_t> vecIndPtr, std::vector<int> vecIndices, std::vector<double> vecData, std::map<std::string, var> mapParam);
 		~Simulator();
 		// set parameters
@@ -36,10 +36,6 @@ class Simulator {
 		Convertor m_convertor;
 		// simulation
 		void runSimulation();
-		void initDeviceContainers(	d_vecPotential,	d_vecNoise,
-									d_vecThreshold, d_vecActive,
-									d_vecRefractory, d_matConnect,
-									d_matActionPotentials );
 		// main objects
 		std::map<std::string, var> m_mapParam;
 		std::vector<size_t> m_vecIndPtr;
