@@ -13,7 +13,6 @@
 namespace py = boost::python;
 
 typedef boost::variant<double, std::string, int, bool> var;
-typedef boost::numeric::ublas::compressed_matrix<double> csr;
 typedef std::map<std::string, var>::iterator it_mapParam;
 
 
@@ -29,7 +28,10 @@ class Convertor {
 		Convertor();
 		~Convertor();
 		std::map<std::string, var> convertParam(py::object xmlTree);
-		csr makeConnectMat(py::object csrData);
+		int getNumNeurons(py::object csrData);
+		std::vector<double> getDataConnectMat(py::object csrData);
+		std::vector<size_t> getIndPtrConnectMat(py::object csrData);	
+		std::vector<int> getIndicesConnectMat(py::object csrData);
 		
 	private:
 		// python init variables
@@ -39,16 +41,15 @@ class Convertor {
 		var castFromString(std::string strType, std::string value);
 		bool boolFromString(std::string strValue);
 		// complex converters
-		py::list vec_to_list(const std::vector<boost::variant>& v);
+		py::list vec_to_list(const std::vector<var>& v);
 		struct handler : boost::static_visitor<var> {
 			var operator()(double d) const;
 			var operator()(std::string s) const;
 			var operator()(int n) const;
 			var operator()(bool b) const;
-		// error handling
-		std::string parse_python_exception();
 		};
-		
+		// error handling
+		std::string parse_python_exception();		
 };
 
 //#include "Convertor.tpp" // not useful anymore since I got rid of the template

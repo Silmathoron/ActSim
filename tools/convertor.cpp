@@ -3,7 +3,7 @@
  * Py/C++ conversion
  ************************/
 
-#include "convertor.h"
+#include "convertor.hpp"
 
 #include <stdexcept>
 #include <boost/python/stl_iterator.hpp>
@@ -45,14 +45,11 @@ Convertor::~Convertor() {
 /* variant from string */
 
 var Convertor::castFromString(std::string strType, std::string value) {
-	switch(strType)
-	{
-		case "int":		return var(static_cast<int>(value));
-		case "float":	return var(static_cast<float>(value));
-		case "string":	return var(value);
-		case "bool":	return var(boolFromString(value));
-		default:		throw std::invalid_argument(boost::format("Type: " + strType + " is not supported!"));
-	}
+	if (strType == "int") return var(std::stoi(value));
+	else if (strType == "float") return var(std::stod(value));
+	else if (strType == "string") return var(value);
+	else if (strType == "bool") return var(boolFromString(value));
+	else throw std::invalid_argument("Type is not supported!");
 }
 
 /* string to bool */
@@ -71,7 +68,7 @@ std::map<std::string, var> convertParam(py::object xmlRoot)
 {
 	std::map<std::string, var> mapParameters;
 	// iterate on all children
-	int nSize = py::len(list);
+	int nSize = py::len(xmlRoot);
 	for (int i=0; i< nSize; ++i) {
 		// extract the tag and the name as strings
 		py::object child = py::object(xmlRoot[i]);
@@ -86,21 +83,23 @@ std::map<std::string, var> convertParam(py::object xmlRoot)
 }
 
 
-/* *********************** *
- * create uBLAS csr matrix *
- * *********************** */
+/* ******************************* *
+ * return array to make csr matrix *
+ * ******************************* */
 
-csr Convertor::makeConnectMat(py::object csrData) {
-	vector<double> vecData = stdlist_to_vec<double>(csrData[0]);
-	vector<int> vecIndPtr = stdlist_to_vec<int>(csrData[1]);
-	vector<int> vecIndices = stdlist_to_vec<int>(csrData[2]);
-	csr matConnect;
-	for (int i=0; i<vecIndices.size(); ++i) {
-		for (int j=vecIndPtr[i]; j<vecIndPtr[i+1]; ++j) {
-			matConnect(i,vecIndices[j]) = vecData[j];
-		}
-	}
-	return matConnect;
+int Convertor::getNumNeurons(py::object csrData) {
+	return csrData[0];
+
+std::vector<double> Convertor::getDataConnectMat(py::object csrData) {
+	return stdlist_to_vec<double>(csrData[1]);
+}
+
+std::vector<size_t> Convertor::getIndPtrConnectMat(py::object csrData) {
+	return stdlist_to_vec<size_t>(csrData[2]);
+}
+
+std::vector<int> Convertor::getIndicesConnectMat(py::object csrData) {
+	return stdlist_to_vec<int>(csrData[3]);
 }
 
 
@@ -146,32 +145,28 @@ std::vector<py::object> pyobjlist_to_vec(py::object& list)
  * Error handling *
  * **************** */
 
-std::string Convertor::parse_python_exception(){
+std::string Convertor::parse_python_exception() {
     PyObject *type_ptr = NULL, *value_ptr = NULL, *traceback_ptr = NULL;
     PyErr_Fetch(&type_ptr, &value_ptr, &traceback_ptr);
     std::string ret("Unfetchable Python error");
     
-    if(type_ptr != NULL){
+    if(type_ptr != NULL) {
         py::handle<> h_type(type_ptr);
         py::str type_pstr(h_type);
         py::extract<std::string> e_type_pstr(type_pstr);
-        if(e_type_pstr.check())
-            ret = e_type_pstr();
-        else
-            ret = "Unknown exception type";
+        if(e_type_pstr.check()) ret = e_type_pstr();
+        else ret = "Unknown exception type";
     }
     
-    if(traceback_ptr != NULL){
+    if(traceback_ptr != NULL) {
         py::handle<> h_tb(traceback_ptr);
         py::object tb(py::import("traceback"));
         py::object fmt_tb(tb.attr("format_tb"));
         py::object tb_list(fmt_tb(h_tb));
         py::object tb_str(py::str("\n").join(tb_list));
         py::extract<std::string> returned(tb_str);
-        if(returned.check())
-            ret += ": " + returned();
-        else
-            ret += std::string(": Unparseable Python traceback");
+        if(returned.check()) ret += ": " + returned();
+        else ret += std::string(": Unparseable Python traceback");
     }
     return ret;
 }
