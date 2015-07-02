@@ -7,7 +7,6 @@
 
 #include <boost/format.hpp>
 #include <boost/python/make_constructor.hpp>
-#include <boost/python/raw_function.hpp>
 
 #include <math.h>
 
@@ -27,8 +26,10 @@ namespace py = boost::python;
  * Constructor *
  * *********** */
 
-
-Simulator::Simulator() {
+Simulator::Simulator(csr connectMat, std::map<std::string, var> mapParam) {
+	m_connectMat = connectMat;
+	m_mapParam = mapParam;
+	m_nNeurons = m_connectMat.size1();
 	m_bRunning = false;
 }
 
@@ -118,14 +119,11 @@ std::vector<double> Simulator::initPotential() {
 std::shared_ptr<Simulator> Simulator_py(py::list lstCSR, py::object xmlRoot) {
 	// create the convertor and create c++ arguments
 	Convertor convertor = Convertor();
-	int numNeurons = convertor.getNumNeurons(lstCSR);
-	std::vector<double> vecData = convertor.getDataConnectMat(lstCSR);
-	std::vector<size_t> vecIndPtr = convertor.getIndPtrConnectMat(lstCSR);
-	std::vector<int> vecIndices = convertor.getIndicesConnectMat(lstCSR);
+	csr matConnect = convertor.makeConnectMat(lstCSR);
 	std::map<std::string, var> mapParam = convertor.convertParam(xmlRoot);
 	// call the constructor with the converted arguments
 	return std::shared_ptr<Simulator>( 
-		new Simulator(numNeurons, vecIndPtr, vecIndices, vecData, mapParam)
+		new Simulator(matConnect, mapParam)
 	);
 }
 

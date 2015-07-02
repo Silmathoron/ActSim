@@ -3,6 +3,7 @@
 
 #include <boost/python.hpp>
 #include <boost/variant.hpp>
+#include <boost/numeric/ublas/matrix_sparse.hpp>
 
 #include "tools/convertor.hpp"
 
@@ -10,6 +11,7 @@
 namespace py = boost::python;
 
 typedef boost::variant<double, std::string, int, bool> var;
+typedef boost::numeric::ublas::compressed_matrix<double> csr;
 typedef std::map<std::string, var>::iterator it_mapParam;
 
 
@@ -22,8 +24,7 @@ typedef std::map<std::string, var>::iterator it_mapParam;
 class Simulator {
 	
 	public:
-		Simulator();
-		Simulator(int numNeurons, std::vector<size_t> vecIndPtr, std::vector<int> vecIndices, std::vector<double> vecData, std::map<std::string, var> mapParam);
+		Simulator(csr connectMat, std::map<std::string, var> mapParam);
 		~Simulator();
 		// set parameters
 		void setParam();
@@ -37,6 +38,7 @@ class Simulator {
 		// simulation
 		void runSimulation();
 		// main objects
+		csr m_connectMat;
 		std::map<std::string, var> m_mapParam;
 		std::vector<size_t> m_vecIndPtr;
 		std::vector<int> m_vecIndices;

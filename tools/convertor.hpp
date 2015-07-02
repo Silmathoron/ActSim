@@ -7,11 +7,13 @@
 #include <Python.h>
 #include <boost/python.hpp>
 #include <boost/variant.hpp>
+#include <boost/numeric/ublas/matrix_sparse.hpp>
 #include <boost/python/stl_iterator.hpp>
 
 namespace py = boost::python;
 
 typedef boost::variant<double, std::string, int, bool> var;
+typedef boost::numeric::ublas::compressed_matrix<double> csr;
 typedef std::map<std::string, var>::iterator it_mapParam;
 
 
@@ -28,9 +30,7 @@ class Convertor {
 		~Convertor();
 		std::map<std::string, var> convertParam(py::object xmlTree);
 		int getNumNeurons(py::object csrData);
-		std::vector<double> getDataConnectMat(py::object csrData);
-		std::vector<size_t> getIndPtrConnectMat(py::object csrData);	
-		std::vector<int> getIndicesConnectMat(py::object csrData);
+		csr makeConnectMat(py:list lstCSR);
 		
 	private:
 		// python init variables

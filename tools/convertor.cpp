@@ -95,20 +95,9 @@ std::map<std::string, var> Convertor::convertParam(py::object xmlRoot)
  * return array to make csr matrix *
  * ******************************* */
 
-int Convertor::getNumNeurons(py::object csrData) {
-	return py::extract<int>(csrData[0]);
-}
-
-std::vector<double> Convertor::getDataConnectMat(py::object csrData) {
-	return stdlist_to_vec<double>(csrData[1]);
-}
-
-std::vector<size_t> Convertor::getIndPtrConnectMat(py::object csrData) {
-	return stdlist_to_vec<size_t>(csrData[2]);
-}
-
-std::vector<int> Convertor::getIndicesConnectMat(py::object csrData) {
-	return stdlist_to_vec<int>(csrData[3]);
+csr Convertor::makeConnectMat(py::list listCSR) {
+	csr matConnect;
+	return matConnect;
 }
 
 
