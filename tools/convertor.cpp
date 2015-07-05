@@ -100,15 +100,15 @@ int Convertor::getNumNeurons(py::object csrData) {
 }
 
 std::vector<double> Convertor::getDataConnectMat(py::object csrData) {
-	return stdlist_to_vec<double>(csrData[1]);
+	return stdlist_to_vec<double>(csrData[3]);
 }
 
 std::vector<size_t> Convertor::getIndPtrConnectMat(py::object csrData) {
-	return stdlist_to_vec<size_t>(csrData[2]);
+	return stdlist_to_vec<size_t>(csrData[1]);
 }
 
 std::vector<int> Convertor::getIndicesConnectMat(py::object csrData) {
-	return stdlist_to_vec<int>(csrData[3]);
+	return stdlist_to_vec<int>(csrData[2]);
 }
 
 

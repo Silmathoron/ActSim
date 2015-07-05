@@ -43,18 +43,20 @@ class Simulator {
 		std::vector<double> m_vecData;
 		// network parameters
 		std::vector<double> initPotential();
+		std::vector<double> initRestPotential();
 		bool m_bRunning;
 		int m_nNeurons;
 		// the neuron parameters
 		double m_rThreshold;
-		double m_rIntCst;
 		double m_rLeak;
 		double m_rRefrac;
 		int m_nRefrac;
 		// the simulation parameters
 		double m_rSimulTime;
 		double m_rTimeStep;
+		double m_rSqrtStep;
 		int m_nTotStep;
+		double m_rNoiseStdDev;
 };
 
 #endif

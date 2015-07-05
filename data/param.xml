@@ -1,12 +1,13 @@
 <parameters>
 	<simulParam>
-		<float name="timestep">0.001</float>
-		<float name="duration">300</float>
+		<float name="TimeStep">0.001</float>
+		<float name="SimulTime">300</float>
+		<float name="NoiseStdDev">5</float>
 	</simulParam>
 	<neuronParam>
-		<float name="h">0.2</float>
-		<float name="g">1.5</float>
-		<int name="whatever">42</int>
+		<float name="Threshold">-45</float>
+		<float name="Leak">0.05</float>
+		<float name="Refrac">0.05</float>
 	</neuronParam>
 	<netParam>
 		<string name="Type">Erdos-Renyi</string>

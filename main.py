@@ -6,9 +6,12 @@
 import sys
 sys.path.append("build/")
 import numpy as np
+import scipy.sparse as ssp
+
+import time
 
 from argParse import ArgParser
-from graphClass import GraphClass
+#~ from graphClass import GraphClass
 import libsimulator
 
 
@@ -54,15 +57,19 @@ if __name__ == "__main__":
 					"MeanInhib": 1,
 					"VarExc": 0.2,
 					"VarInhib": 0.2}
-	graph = GraphClass(dicGraph)
-	nNodes = graph.getNodes()
-	connectMat = graph.getAdjacency()
-	csrData = [nNodes, connectMat.indptr, connectMat.indices, connectMat.data]
+	#~ graph = GraphClass(dicGraph)
+	#~ nNodes = graph.getNodes()
+	nNodes = 1000
+	connectMat = ssp.rand(1000,1000,0.012,'csr')
+	csrData = [nNodes, connectMat.indptr.tolist(), connectMat.indices.tolist(), connectMat.data.tolist()]
 	
 	#----------------------#
 	# Create the simulator #
 	#----------------------#
 
 	actSimulator = libsimulator.Simulator(csrData, parser.xmlRoot)
+	actSimulator.setParam()
+	start = time.time()
 	actSimulator.start()
+	print(time.time() - start)
 	#~ actSimulator = libsimulator.Simulator(csrData)
