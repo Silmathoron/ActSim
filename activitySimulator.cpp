@@ -109,8 +109,11 @@ void Simulator::runSimulation() {
 	// run
 	for (int i = 0; i<m_nTotStep; ++i) {
 		std::cout << boost::format("Current step: %1%") % i << std::endl;
-		//~ d_vecPotential += ( (d_vecRestPotential - d_vecPotential) * ts() + randNorm(vex::element_index(0,m_nNeurons), std::rand()) * rts() ) / l();
-		d_vecPotential += d_vecRestPotential;
+		d_vecPotential += ( (d_vecRestPotential - d_vecPotential) * m_rTimeStep + randNorm(vex::element_index(0,m_nNeurons), std::rand()) * m_rSqrtStep ) / m_rLeak;
+		//~ d_vecPotential += d_vecRestPotential;
+		//~ for (int j=0; j<vecPotential.size(); ++j) {
+			//~ vecPotential[j] += ( (vecRestPotential[j] - vecPotential[j]) * 0.001 + distribution(generator) *0.01 ) / 0.1;
+		//~ }
 	}
 }
 

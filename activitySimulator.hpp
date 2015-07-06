@@ -31,6 +31,7 @@ class Simulator {
 		void start();
 		// get results
 		py::object get_results();
+		double m_rTimeStep;
 		
 	private:
 		Convertor m_convertor;
@@ -53,7 +54,6 @@ class Simulator {
 		int m_nRefrac;
 		// the simulation parameters
 		double m_rSimulTime;
-		double m_rTimeStep;
 		double m_rSqrtStep;
 		int m_nTotStep;
 		double m_rNoiseStdDev;
