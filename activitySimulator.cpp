@@ -40,6 +40,7 @@ Simulator::Simulator(int numNeurons, std::vector<size_t> vecIndPtr, std::vector<
 
 Simulator::~Simulator() {}
 
+
 /* ************** *
  * Set parameters *
  * ************** */
@@ -59,6 +60,7 @@ void Simulator::setParam() {
 	m_nRefrac = static_cast<int>(floor(m_rRefrac / m_rTimeStep));
 	m_rSqrtStep = sqrt(m_rTimeStep);
 }
+
 
 /* ********** *
  * Simulation *
@@ -110,6 +112,7 @@ void Simulator::runSimulation() {
 	for (int i = 0; i<m_nTotStep; ++i) {
 		std::cout << boost::format("Current step: %1%") % i << std::endl;
 		d_vecPotential += ( (d_vecRestPotential - d_vecPotential) * m_rTimeStep + randNorm(vex::element_index(0,m_nNeurons), std::rand()) * m_rSqrtStep ) / m_rLeak;
+		
 		//~ d_vecPotential += d_vecRestPotential;
 		//~ for (int j=0; j<vecPotential.size(); ++j) {
 			//~ vecPotential[j] += ( (vecRestPotential[j] - vecPotential[j]) * 0.001 + distribution(generator) *0.01 ) / 0.1;
@@ -117,14 +120,20 @@ void Simulator::runSimulation() {
 	}
 }
 
+/* action potential gestion */
+
+VEX_FUNCTION(int, apGestion, (vex::SpMat<double, int, size_t>, d_matActionPotentials),
+    double sum = 0;
+    double myval = val[i];
+    for(size_t j = 0; j < n; ++j)
+        if (j != i) sum += fabs(val[j] - myval);
+    return sum;
+    );
 
 
-/* Send the results to DataProcessor */
-
-py::object Simulator::get_results() {
-	py::object results;
-	return results;
-}
+/* ************** *
+ * Initialization *
+ * ************** */
 
 /* Initialize the potentials */
 
@@ -136,6 +145,18 @@ std::vector<double> Simulator::initPotential() {
 std::vector<double> Simulator::initRestPotential() {
 	std::vector<double> vecRestPotential(m_nNeurons);
 	return vecRestPotential;
+}
+
+
+/* ************* *
+ * Communication *
+ * ************* */
+
+/* Send the results to DataProcessor */
+
+py::object Simulator::get_results() {
+	py::object results;
+	return results;
 }
 
 
