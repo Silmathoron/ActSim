@@ -3,11 +3,15 @@
 		<float name="TimeStep">0.001</float>
 		<float name="SimulTime">300</float>
 		<float name="NoiseStdDev">5</float>
+		<int name="SpikeDelay">3</int>
 	</simulParam>
 	<neuronParam>
-		<float name="Threshold">-45</float>
+		<float name="Threshold">-55</float>
 		<float name="Leak">0.05</float>
 		<float name="Refrac">0.05</float>
+		<float name="SpikePotential">10</float>
+		<float name="AvgPot">-70</float>
+		<float name="RestPot">-70</float>
 	</neuronParam>
 	<netParam>
 		<string name="Type">Erdos-Renyi</string>
