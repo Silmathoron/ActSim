@@ -4,7 +4,7 @@
 """ Main loop for ActSim """
 
 import sys
-sys.path.append("build/")
+sys.path.append("tools/")
 import numpy as np
 import scipy.sparse as ssp
 
@@ -12,7 +12,8 @@ import time
 
 from argParse import ArgParser
 #~ from graphClass import GraphClass
-import libsimulator
+from activitySimulator import Simulator
+from xmlTools import strToBool, xmlToDict
 
 
 
@@ -21,7 +22,7 @@ import libsimulator
 # Init modules
 #--------------------
 
-parser = ArgParser(description="AlgoGen: graph generator for reservoir computing",usage='%(prog)s [options]')
+parser = ArgParser(description="ActSim: neural network activity simulator",usage='%(prog)s [options]')
 
 
 
@@ -31,14 +32,18 @@ parser = ArgParser(description="AlgoGen: graph generator for reservoir computing
 #--------------------
 
 if __name__ == "__main__":
-	None
+	
 	#------------#
 	# Parse args #
 	#------------#
-
+	
 	args = parser.parseArgs()
 
 	# get the xml trees
+
+	dicTypes = {"float": float, "int": int, "bool": strToBool, "string": str}
+	xmlSim = parser.xmlRoot.find("simulParam")
+	dicSim = xmlToDict(xmlSim, dicTypes)
 	
 	#------------------#
 	# Create the graph #
@@ -61,15 +66,13 @@ if __name__ == "__main__":
 	#~ nNodes = graph.getNodes()
 	nNodes = 1000
 	connectMat = ssp.rand(1000,1000,0.012,'csr')
-	csrData = [nNodes, connectMat.indptr.tolist(), connectMat.indices.tolist(), connectMat.data.tolist()]
 	
 	#----------------------#
 	# Create the simulator #
 	#----------------------#
 
-	actSimulator = libsimulator.Simulator(csrData, parser.xmlRoot)
+	actSimulator = Simulator(connectMat, dicSim)
 	actSimulator.setParam()
 	start = time.time()
 	actSimulator.start()
 	print(time.time() - start)
-	#~ actSimulator = libsimulator.Simulator(csrData)

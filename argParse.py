@@ -43,7 +43,7 @@ class ArgParser(argparse.ArgumentParser):
 		# xml parser info
 		self.dicType = {"float": float,
 						"int": int,
-						"str": str,
+						"string": str,
 						"bool": strToBool}
 		self.xmlRoot = None
 
@@ -73,6 +73,5 @@ class ArgParser(argparse.ArgumentParser):
 			print(e)
 			raise IOError("There might be a problem with the required\
 XML file containing the parameters")
-		print(xmlToDict(self.xmlRoot[1],self.dicType))
 
 	

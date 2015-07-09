@@ -8,8 +8,6 @@ sys.path.append("tools/")
 import numpy as np
 import scipy.sparse as ssp
 
-from xmlTools import xmlToDict
-
 
 
 #
@@ -23,25 +21,23 @@ class Simulator:
 	# Constructor #
 	#-------------#
 	
-	def __init__(self, csrMat, xmlRoot);
+	def __init__(self, csrMat, dicParam):
 		# main objects
 		self.matConnect = csrMat
 		self.bRunning = False
 		self.nNeurons = csrMat.shape[0]
-		self.dicTypes = {}
 		# simulation, neurons and network parameters
-		dicParam = xmlToDict(xmlRoot)
-		self.setParam(dicParam)
+		self.dicParam = dicParam
 		# avalanches container
-		self.matAvalanches = ssp.lil_matrix((self.nNeurons, self.nTotStep), dtype=np.int16)
+		#~ self.matAvalanches = ssp.lil_matrix((self.nNeurons, self.nTotStep), dtype=np.int16)
 	
 	
 	#------------#
 	# Initialize #
 	#------------#
 	
-	def setParam(self, dicParam):
-		for key, value in dicParam.items():
+	def setParam(self):
+		for key, value in self.dicParam.items():
 			if key == "Threshold":
 				self.rThreshold = value
 			elif key == "Leak":
@@ -59,13 +55,14 @@ class Simulator:
 			elif key == "RestPot":
 				self.rRestPot = value
 			elif key == "SpikeDelay":
-				self.nSpikeDelay = value
+				self.rSpikeDelay = value
 			elif key == "SpikePotential":
 				self.rSpikePotential = value
 			else:
 				raise TypeError("Wrong XML parameters")
 		self.nTotStep = int(np.floor(self.rSimulTime / self.rTimeStep))
 		self.nRefrac = int(np.floor(self.rRefrac / self.rTimeStep))
+		self.nSpikeDelay = int(np.floor(self.rSpikeDelay / self.rTimeStep))
 		self.rSqrtStep = np.sqrt(self.rTimeStep)
 	
 	
@@ -75,7 +72,7 @@ class Simulator:
 	
 	## running
 	
-	def start(self);
+	def start(self):
 		if not self.bRunning:
 			self.bRunning = True
 			print("Starting run")
@@ -89,12 +86,13 @@ class Simulator:
 		vecSpike = np.repeat(self.rSpikePotential,self.nNeurons)
 		# init matrix (lil matrix automatically gets rid of the zeros)
 		matSpikes = ssp.lil_matrix((self.nNeurons, self.nNeurons), dtype=np.int8)
-		matSpikesTMP = ssp.lil_matrix((self.nNeurons, self.nNeurons), dtype=list)
+		matSpikesTMP = ssp.lil_matrix((self.nNeurons, self.nNeurons), dtype=np.int8)
 		matDecrement = ssp.lil_matrix((self.nNeurons, self.nNeurons), dtype=np.int8)
 		matAvalanche = np.array([ [] for _ in range(self.nNeurons) ])
+		print("all initiated")
 		# run
 		for i in range(self.nTotStep):
-			vecPotential += ( (vecRestPotential-vecPotential) / self.rTimeStep + self.rSqrtStep * np.random.normal(0.,self.rNoiseStdDev, self.nNeurons) ) / self.rLeak
+			vecPotential += ( (vecRestPotential-vecPotential) * self.rTimeStep + self.rSqrtStep * np.random.normal(0.,self.rNoiseStdDev, self.nNeurons) ) / self.rLeak
 			numNNZ = matSpikes.nnz
 			# decrement spike arrival time
 			if numNNZ:
@@ -130,7 +128,7 @@ class Simulator:
 	## initialize
 	
 	def initPotential(self):
-		rGaussScale = np.abs(self.rAvgPot - self.rRestPot) / 2.
+		rGaussScale = max(np.abs(self.rAvgPot - self.rRestPot),5) / 2.
 		vecPotential = np.random.normal(loc=self.rAvgPot, scale=rGaussScale, size=self.nNeurons)
 		vecRestPotential = np.random.normal(loc=self.rRestPot, scale=rGaussScale, size=self.nNeurons)
 		vecActive = np.floor(np.random.uniform(0.,0.3,self.nNeurons)).astype(bool)
