@@ -53,7 +53,7 @@ class Simulator:
 			elif key == "AvgPot":
 				self.rAvgPot = value
 			elif key == "RestPot":
-				self.rRestPot = value
+				self.rRestPotential = value
 			elif key == "SpikeDelay":
 				self.rSpikeDelay = value
 			elif key == "SpikePotential":
@@ -82,7 +82,7 @@ class Simulator:
 		# init vectors
 		vecPotential, vecRestPotential, vecActive = self.initPotential()
 		vecThreshold = np.repeat(self.rThreshold, self.nNeurons)
-		vecRefractory = np.zeros(self.nNeurons, dtype=bool)
+		vecRefractory = np.zeros(self.nNeurons, dtype=np.int8)
 		vecSpike = np.repeat(self.rSpikePotential,self.nNeurons)
 		# init matrix (lil matrix automatically gets rid of the zeros)
 		matSpikes = ssp.lil_matrix((self.nNeurons, self.nNeurons), dtype=np.int8)
@@ -95,6 +95,7 @@ class Simulator:
 			vecPotential += ( (vecRestPotential-vecPotential) * self.rTimeStep + self.rSqrtStep * np.random.normal(0.,self.rNoiseStdDev, self.nNeurons) ) / self.rLeak
 			numNNZ = matSpikes.nnz
 			# decrement spike arrival time
+			idxNNZ = np.array([])
 			if numNNZ:
 				idxNNZ = matSpikes.nonzero()
 				matSpikesTMP[idxNNZ] = matSpikes[idxNNZ]
@@ -104,33 +105,39 @@ class Simulator:
 				idxNNZ_post = matSpikes.nonzero()
 				matSpikesTMP[idxNNZ_post] = 0
 				idxReceived = matSpikesTMP.nonzero()[0]
-				# upgrade the neurons that receive their spikes
+				# upgrade the neurons that receive their spikes and are not refractory
+				#~ idxUpdate = np.intersect1d(np.where(vecRefractory)[0], idxReceived)
 				vecPotential[idxReceived] += np.multiply(~vecRefractory[idxReceived], vecSpike[idxReceived])
-				# get new spiking neurons and update avalanche container
-				vecBoolActive = np.greater(vecPotential,vecThreshold)
-				vecActive = np.where()[0]
-				if not vecActive.any():
-					""" SEND THE AVALANCHE VECTOR TO THE DATA PROCESSOR """
-					matAvalanche = np.array([ [] for _ in range(self.nNeurons) ])
-				else:
-					matAvalanche[vecBoolActive>0] += [i]
-				# add spikes
-				matSpike[:,vecActive] = self.nSpikeDelay * self.matConnect[:,vecActive].astype(bool)
-				# decrement refractory period
-				vecReset = vecRefractory.astype(bool)
-				vecRefractory[vecRefractory>0] -= 1
-				vecReset *= ~vecRefractory.astype(bool)
-				vecPotential[vecReset] = self.rRestPotential
-				# reset tool matrices
-				matDecrement[idxNNZ] = 0
-				matSpikesTMP[idxNNZ] = 0
+				#~ vecPotential[idxUpdate] += vecSpike[idxUpdate]
+			# get new spiking neurons and update avalanche container
+			vecBoolActive = np.greater(vecPotential,vecThreshold)
+			vecRefractory[vecBoolActive] += self.nRefrac
+			print(np.sum(vecBoolActive))
+			#~ print(vecBoolActive[:10])
+			#~ print(vecRefractory[:10])
+			vecActive = np.where(vecBoolActive)[0]
+			if not vecActive.any():
+				""" SEND THE AVALANCHE VECTOR TO THE DATA PROCESSOR """
+				matAvalanche = np.array([ [] for _ in range(self.nNeurons) ])
+			else:
+				matAvalanche[vecBoolActive>0] += [i]
+			# add spikes
+			matSpikes[:,vecActive] = self.nSpikeDelay * self.matConnect[:,vecActive].astype(bool)
+			# decrement refractory period
+			vecReset = vecRefractory.astype(bool)
+			vecRefractory[vecRefractory>0] -= 1
+			vecReset *= ~vecRefractory.astype(bool)
+			vecPotential[vecReset] = self.rRestPotential
+			# reset tool matrices
+			matDecrement[idxNNZ] = 0
+			matSpikesTMP[idxNNZ] = 0
 		
 	## initialize
 	
 	def initPotential(self):
-		rGaussScale = max(np.abs(self.rAvgPot - self.rRestPot),5) / 2.
+		rGaussScale = max(np.abs(self.rAvgPot - self.rRestPotential),5) / 2.
 		vecPotential = np.random.normal(loc=self.rAvgPot, scale=rGaussScale, size=self.nNeurons)
-		vecRestPotential = np.random.normal(loc=self.rRestPot, scale=rGaussScale, size=self.nNeurons)
+		vecRestPotential = np.random.normal(loc=self.rRestPotential, scale=rGaussScale, size=self.nNeurons)
 		vecActive = np.floor(np.random.uniform(0.,0.3,self.nNeurons)).astype(bool)
 		return vecPotential, vecRestPotential, vecActive
 	

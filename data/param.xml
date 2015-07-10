@@ -1,13 +1,13 @@
 <parameters>
 	<simulParam>
-		<float name="TimeStep">0.005</float>
-		<float name="SimulTime">30</float>
-		<float name="NoiseStdDev">10</float>
-		<float name="SpikeDelay">0.03</float>
-		<float name="Threshold">-55</float>
-		<float name="Leak">0.05</float>
-		<float name="Refrac">0.05</float>
-		<float name="SpikePotential">10</float>
+		<float name="TimeStep">0.0005</float>
+		<float name="SimulTime">1</float>
+		<float name="NoiseStdDev">0.5</float>
+		<float name="SpikeDelay">0.001</float>
+		<float name="Threshold">-50</float>
+		<float name="Leak">0.002</float>
+		<float name="Refrac">0.007</float>
+		<float name="SpikePotential">13</float>
 		<float name="AvgPot">-70</float>
 		<float name="RestPot">-70</float>
 	</simulParam>
@@ -15,5 +15,12 @@
 		<string name="Type">Erdos-Renyi</string>
 		<int name="Nodes">1000</int>
 		<float name="Density">0.01</float>
+		<float name="FracInhib">0.5</float>
+		<bool name="Weighted">True</bool>
+		<string name="Distribution">Gaussian</string>
+		<float name="MeanExc">1.0</float>
+		<float name="MeanInhib">1.0</float>
+		<float name="VarExc">0.3</float>
+		<float name="VarInhib">0.3</float>
 	</netParam>
 </parameters>

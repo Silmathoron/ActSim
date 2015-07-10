@@ -11,7 +11,7 @@ import scipy.sparse as ssp
 import time
 
 from argParse import ArgParser
-#~ from graphClass import GraphClass
+from graphClass import GraphClass
 from activitySimulator import Simulator
 from xmlTools import strToBool, xmlToDict
 
@@ -43,29 +43,16 @@ if __name__ == "__main__":
 
 	dicTypes = {"float": float, "int": int, "bool": strToBool, "string": str}
 	xmlSim = parser.xmlRoot.find("simulParam")
+	xmlNet = parser.xmlRoot.find("netParam")
 	dicSim = xmlToDict(xmlSim, dicTypes)
 	
 	#------------------#
 	# Create the graph #
 	#------------------#
 	
-	dicGraph = {"Type": "Erdos-Renyi",
-					"Nodes": 1000,
-					"Density": 0.01,
-					"FracInhib": 0.5,
-					"Weighted": True,
-					"Distribution": "Gaussian",
-					"Reciprocity": 0.2,
-					"InDeg": 2.5,
-					"OutDeg": 2.5,
-					"MeanExc": 1,
-					"MeanInhib": 1,
-					"VarExc": 0.2,
-					"VarInhib": 0.2}
-	#~ graph = GraphClass(dicGraph)
-	#~ nNodes = graph.getNodes()
-	nNodes = 1000
-	connectMat = ssp.rand(1000,1000,0.012,'csr')
+	dicGraph = xmlToDict(xmlNet,dicTypes)
+	graph = GraphClass(dicGraph)
+	connectMat = graph.getAdjacency()
 	
 	#----------------------#
 	# Create the simulator #
