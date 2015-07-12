@@ -5,22 +5,27 @@
 		<float name="NoiseStdDev">0.5</float>
 		<float name="SpikeDelay">0.001</float>
 		<float name="Threshold">-50</float>
-		<float name="Leak">0.002</float>
+		<float name="Leak">0.005</float>
 		<float name="Refrac">0.007</float>
-		<float name="SpikePotential">13</float>
+		<float name="SpikePotential">15</float>
 		<float name="AvgPot">-70</float>
 		<float name="RestPot">-70</float>
 	</simulParam>
 	<netParam>
-		<string name="Type">Erdos-Renyi</string>
+		<string name="Type">Free-scale</string>
 		<int name="Nodes">1000</int>
-		<float name="Density">0.01</float>
-		<float name="FracInhib">0.5</float>
+		<float name="Density">0.015</float>
+		<float name="FracInhib">0.2</float>
 		<bool name="Weighted">True</bool>
 		<string name="Distribution">Gaussian</string>
 		<float name="MeanExc">1.0</float>
 		<float name="MeanInhib">1.0</float>
 		<float name="VarExc">0.3</float>
 		<float name="VarInhib">0.3</float>
+		<float name="Lambda">0.04</float>
+		<int name="Rho">1000</int>
+		<float name="InDeg">2.2</float>
+		<float name="OutDeg">2.2</float>
+		<float name="Reciprocity">0.2</float>
 	</netParam>
 </parameters>

@@ -53,7 +53,7 @@ class ArgParser(argparse.ArgumentParser):
 	def parseArgs(self):
 		""" call the argparse command, then apply args """
 		self.args = self.parse_args()
-		self._getParameters()
+		self.getParameters()
 
 	#--------------------#
 	# Process parameters #
@@ -61,7 +61,7 @@ class ArgParser(argparse.ArgumentParser):
 
 	## get XML parameters
 	
-	def _getParameters(self):
+	def getParameters(self):
 		""" process the xml file """
 		try:
 			tree = xmlet.parse(self.args.fromfile)

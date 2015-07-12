@@ -5,15 +5,13 @@
 
 import sys
 sys.path.append("tools/")
-import numpy as np
-import scipy.sparse as ssp
-
 import time
 
 from argParse import ArgParser
 from graphClass import GraphClass
 from activitySimulator import Simulator
 from xmlTools import strToBool, xmlToDict
+from dataProc import DataProc
 
 
 
@@ -54,12 +52,20 @@ if __name__ == "__main__":
 	graph = GraphClass(dicGraph)
 	connectMat = graph.getAdjacency()
 	
+	#---------------------------#
+	# Create the data processor #
+	#---------------------------#
+
+	dataProc = DataProc(dicSim)
+	
 	#----------------------#
 	# Create the simulator #
 	#----------------------#
 
-	actSimulator = Simulator(connectMat, dicSim)
+	actSimulator = Simulator(connectMat, dicSim, dataProc)
 	actSimulator.setParam()
 	start = time.time()
 	actSimulator.start()
 	print(time.time() - start)
+
+	dataProc.getHisto()
