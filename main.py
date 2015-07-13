@@ -10,8 +10,8 @@ import time
 from argParse import ArgParser
 from graphClass import GraphClass
 from activitySimulator import Simulator
-from xmlTools import strToBool, xmlToDict
 from dataProc import DataProc
+from xmlTools import strToBool, xmlToDict
 
 
 
@@ -66,6 +66,6 @@ if __name__ == "__main__":
 	actSimulator.setParam()
 	start = time.time()
 	actSimulator.start()
-	print(time.time() - start)
+	print("--- {} s to model {} steps ---".format(time.time() - start, actSimulator.getTotSteps()))
 
 	dataProc.getHisto()
