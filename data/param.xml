@@ -12,13 +12,13 @@
 		<float name="RestPot">-70</float>
 	</simulParam>
 	<netParam>
-		<string name="Type">Free-scale</string>
+		<string name="Type">EDR</string>
 		<int name="Nodes">1000</int>
-		<float name="Density">0.015</float>
+		<float name="Density">0.05</float>
 		<float name="FracInhib">0.2</float>
 		<bool name="Weighted">True</bool>
 		<string name="Distribution">Gaussian</string>
-		<float name="MeanExc">1.0</float>
+		<float name="MeanExc">7.0</float>
 		<float name="MeanInhib">1.0</float>
 		<float name="VarExc">0.3</float>
 		<float name="VarInhib">0.3</float>
