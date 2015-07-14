@@ -27,6 +27,9 @@ class DataProc:
 		self.lstBurstSizes = []
 		self.lstBurstDuration = []
 		self.lstBurstIntervals = []
+		self.count = 0
+		# neuron potential
+		self.vecNeuronPotential = None
 
 	
 	#------------------#
@@ -34,9 +37,16 @@ class DataProc:
 	#------------------#
 	
 	def processEvent(self, nBurstSpikes, nBurstDuration, nInterval):
+		self.count += 1
 		self.lstBurstSizes.append(nBurstSpikes)
 		self.lstBurstDuration.append(nBurstDuration)
 		self.lstBurstIntervals.append(nInterval)
+	
+	def initNeurPotential(self, nTotSteps):
+		self.vecNeuronPotential = np.empty(nTotSteps)
+	
+	def updateNeurPotential(self, step, potential):
+		self.vecNeuronPotential[step] = potential
 
 	
 	#------------#
@@ -44,6 +54,7 @@ class DataProc:
 	#------------#
 
 	def getHisto(self):
+		print("--- total number of events: {}, max size: {} ---".format(self.count, np.max(self.lstBurstSizes)))
 		numBursts = len(self.lstBurstDuration)
 		numBins = int(numBursts/10)
 		# Size (gen log separated bins)
@@ -75,6 +86,10 @@ class DataProc:
 		plt.ylabel('Counts')
 		plt.tight_layout()
 		
+		plt.show()
+	
+	def printPotential(self):
+		plt.plot(self.vecNeuronPotential)
 		plt.show()
 	
 	

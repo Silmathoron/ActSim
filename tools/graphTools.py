@@ -1,14 +1,20 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import scipy as sp
+from copy import deepcopy
 
 from graph_tool import *
 from graph_tool.generation import geometric_graph
 from graph_tool.stats import *
 from graph_tool.util import *
+from graph_tool.centrality import betweenness
 
-#####################
+
+
+#
+#---
 # Graph generators
+#---------------------
 
 def genGraphER(dicProperties):
 	# on initialise le graphe
@@ -54,7 +60,7 @@ def genGraphER(dicProperties):
 	graphERW.edge_properties["weight"] = epropWeights
 	# and weights
 	if dicProperties["Weighted"]:
-		lstWeights = dicGenWeights[dicProperties["Distribution"]](dicProperties,nEdges,nExc) # generate the weights
+		lstWeights = dicGenWeights[dicProperties["Distribution"]](graphERW,dicProperties,nEdges,nExc) # generate the weights
 		graphERW.edge_properties["weight"].a = np.multiply(lstWeights,lstTypes)
 	return graphERW
 
@@ -162,7 +168,7 @@ def genGraphFS(dicProperties):
 	graphFS.edge_properties["weight"] = epropWeights
 	# and weights
 	if dicProperties["Weighted"]:
-		lstWeights = dicGenWeights[dicProperties["Distribution"]](dicProperties,nEdges,nExc) # generate the weights
+		lstWeights = dicGenWeights[dicProperties["Distribution"]](graphFS,dicProperties,nEdges,nExc) # generate the weights
 		graphFS.edge_properties["weight"].a = np.multiply(lstWeights,lstTypes)
 	return graphFS
 
@@ -230,14 +236,17 @@ def genGraphEDR(dicProperties):
 	graphEDR.edge_properties["weight"] = epropWeights
 	# and weights
 	if dicProperties["Weighted"]:
-		lstWeights = dicGenWeights[dicProperties["Distribution"]](dicProperties,nEdges,nExc) # generate the weights
+		lstWeights = dicGenWeights[dicProperties["Distribution"]](graphEDR,dicProperties,nEdges,nExc) # generate the weights
 		graphEDR.edge_properties["weight"].a = np.multiply(lstWeights,lstTypes)
 	return graphEDR
 
-######################
-# Weights generators
 
-def genWGauss(dicProperties,nEdges,nExc):
+#
+#---
+# Weights generators
+#---------------------
+
+def genWGauss(graph,dicProperties,nEdges,nExc):
 	rMeanExc = dicProperties["MeanExc"]
 	rMeanInhib = dicProperties["MeanInhib"]
 	rVarExc = dicProperties["VarExc"]
@@ -247,7 +256,7 @@ def genWGauss(dicProperties,nEdges,nExc):
 	lstWeights = np.concatenate((np.absolute(lstWeightsExc), np.absolute(lstWeightsInhib)))
 	return lstWeights
 
-def genWLogNorm(dicProperties,nEdges,nExc):
+def genWLogNorm(graph,dicProperties,nEdges,nExc):
 	rScaleExc = dicProperties["ScaleExc"]
 	rLocationExc = dicProperties["LocationExc"]
 	rScaleinHib = dicProperties["ScaleInhib"]
@@ -257,11 +266,18 @@ def genWLogNorm(dicProperties,nEdges,nExc):
 	lstWeights = np.concatenate((np.absolute(lstWeightsExc), np.absolute(lstWeightsInhib)))
 	return lstWeights
 
-def genWBetweenness(dicProperties,nEdges,nExc):
+def genWBetweenness(graph,dicProperties,nEdges,nExc):
 	lstWeights = np.zeros(nEdges)
+	rMin = dicProperties["Min"]
+	rMax = dicProperties["Max"]
+	vpropBetw,epropBetw = betweenness(graph)
+	lstWeights = deepcopy(epropBetw.a)
+	rMaxBetw = lstWeights.max()
+	rMinBetw = lstWeights.min()
+	lstWeights = np.multiply(lstWeights-rMinBetw,rMax/rMaxBetw) + rMin
 	return lstWeights
 
-def genWDegree(dicProperties,nEdges,nExc):
+def genWDegree(graph,dicProperties,nEdges,nExc):
 	lstWeights = np.zeros(nEdges)
 	return lstWeights
 

@@ -85,38 +85,39 @@ class Simulator:
 		vecPotential, vecRestPotential, vecActive = self.initPotential()
 		vecThreshold = np.repeat(self.rThreshold, self.nNeurons)
 		vecRefractory = np.zeros(self.nNeurons, dtype=np.int8)
+		vecExcitable = np.repeat(True, self.nNeurons).astype(bool)
 		vecSpike = np.repeat(self.rSpikePotential,self.nNeurons)
-		# init matrix (lil matrix automatically gets rid of the zeros)
-		#~ matSpikes = ssp.lil_matrix((self.nNeurons, self.nNeurons), dtype=np.int8)
-		matSpikes = ssp.lil_matrix((self.nNeurons, self.nNeurons), dtype=np.int8)
-		matSpikesTMP = ssp.lil_matrix((self.nNeurons, self.nNeurons), dtype=np.int8)
-		matDecrement = ssp.lil_matrix((self.nNeurons, self.nNeurons), dtype=np.int8)
-		#~ matAvalanche = np.array([ [] for _ in range(self.nNeurons) ])
+		vecSpikeTarget = np.array([], dtype=np.int32)
+		vecSpikeDelay = np.array([], dtype=np.int32)
+		vecIndices = self.matConnect.indices
+		vecIndptr = self.matConnect.indptr
 		print("all initiated")
 		# run
 		nBurstSpikes = 0
 		nInterval = 0
 		nBurstDuration = 0
 		for i in range(self.nTotStep):
-			vecPotential += ( (vecRestPotential-vecPotential) * self.rTimeStep + self.rSqrtStep * np.random.normal(0.,self.rNoiseStdDev, self.nNeurons) ) / self.rLeak
-			numNNZ = matSpikes.nnz
+			vecPotential += ( (vecRestPotential-vecPotential) * self.rTimeStep + self.rSqrtStep * np.random.normal(0.,self.rNoiseStdDev, self.nNeurons)) / self.rLeak 
+			numNNZ = len(vecSpikeTarget)
 			# decrement spike arrival time
-			idxNNZ = np.array([0])
-			if numNNZ:
-				idxNNZ = matSpikes.nonzero()
-				matSpikesTMP[idxNNZ] = matSpikes[idxNNZ]
-				matDecrement[idxNNZ] = 1
-				matSpikes -= matDecrement
-				# get neurons that received the only spike traveling on their axon
-				idxNNZ_post = matSpikes.nonzero()
-				matSpikesTMP[idxNNZ_post] = 0
-				idxReceived = matSpikesTMP.nonzero()[1]
-				# upgrade the neurons that receive their spikes and are not refractory
-				vecPotential[idxReceived] += np.multiply(~vecRefractory[idxReceived], vecSpike[idxReceived])
+			#~ idxLastTarget = 0
+			#~ if numNNZ:
+				#~ vecSpikeDelay -= 1
+				#~ # get neurons that received the only spike traveling on their axon
+				#~ idxZeroDelay = np.where(vecSpikeDelay == 0)[0]
+				#~ idxReceived = vecSpikeTarget[idxZeroDelay]
+				#~ if idxZeroDelay.size:
+					#~ vecSpikeDelay = vecSpikeDelay[idxZeroDelay[-1]:]
+					#~ vecSpikeTarget = vecSpikeTarget[idxZeroDelay[-1]:]
+					#~ # upgrade the neurons that receive their spikes and are not refractory
+					#~ vecPotential[idxReceived] += np.multiply(vecExcitable[idxReceived], vecSpike[idxReceived])
+			#~ print(vecRefractory[0:10])
 			# get new spiking neurons and update avalanche container
-			vecBoolActive = np.greater(vecPotential,vecThreshold)
-			vecRefractory[vecBoolActive] += self.nRefrac
+			vecBoolActive = np.multiply(vecExcitable, np.greater(vecPotential,vecThreshold))
+			#~ print(np.sum(vecBoolActive))
+			vecRefractory[vecBoolActive] = self.nRefrac
 			vecActive = np.where(vecBoolActive)[0]
+			#~ print(np.sum(vecRefractory>0))
 			if not vecActive.any():
 				if self.bBursting:
 					self.dataProc.processEvent(nBurstSpikes, nBurstDuration, nInterval)
@@ -130,16 +131,21 @@ class Simulator:
 				# add spikes
 				nBurstDuration += 1
 				nBurstSpikes += np.sum(vecBoolActive)
-				#~ print(arrRows.shape,arrCols.shape)
-				matSpikes[vecActive,:] = self.nSpikeDelay * self.matConnect[vecActive,:].astype(bool)
+				#~ vecNewTargets = np.array([], dtype=np.int32)
+				#~ for idx in vecActive:
+					#~ vecRow = vecIndices[vecIndptr[idx]:vecIndptr[idx+1]]
+					#~ if vecRow.size:
+						#~ vecNewTargets = np.concatenate((vecNewTargets, vecRow))
+				#~ vecSpikeTarget = np.concatenate((vecSpikeTarget, vecNewTargets))
+				#~ vecSpikeDelay = np.concatenate((vecSpikeDelay, np.repeat(self.nSpikeDelay, len(vecNewTargets))))
 			# decrement refractory period
 			vecReset = vecRefractory.astype(bool)
 			vecRefractory[vecRefractory>0] -= 1
-			vecReset *= ~vecRefractory.astype(bool)
+			vecExcitable = ~vecRefractory.astype(bool)
+			vecReset *= vecExcitable
 			vecPotential[vecReset] = self.rRestPotential
-			# reset tool matrices
-			matDecrement[idxNNZ] = 0
-			matSpikesTMP[idxNNZ] = 0
+		if self.bBursting:
+			self.dataProc.processEvent(nBurstSpikes, nBurstDuration, nInterval)
 		
 	## initialize
 	
@@ -157,3 +163,6 @@ class Simulator:
 		
 	def get_results(self):
 		return None
+	
+	def getTotSteps(self):
+		return self.nTotStep
