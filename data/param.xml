@@ -13,17 +13,17 @@
 	</simulParam>
 	<netParam>
 		<string name="Type">EDR</string>
-		<int name="Nodes">5000</int>
+		<int name="Nodes">1000</int>
 		<float name="Density">0.015</float>
 		<float name="FracInhib">0.2</float>
 		<bool name="Weighted">True</bool>
 		<string name="Distribution">Gaussian</string>
-		<float name="MeanExc">7.0</float>
+		<float name="MeanExc">11</float>
 		<float name="MeanInhib">1.0</float>
 		<float name="VarExc">0.3</float>
 		<float name="VarInhib">0.3</float>
-		<float name="Min">0.01</float>
-		<float name="Max">10</float>
+		<float name="Min">0.02</float>
+		<float name="Max">30</float>
 		<float name="Lambda">0.04</float>
 		<int name="Rho">1000</int>
 		<float name="InDeg">2.2</float>

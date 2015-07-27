@@ -11,7 +11,9 @@ from argParse import ArgParser
 from graphClass import GraphClass
 from xmlTools import strToBool, xmlToDict
 
-setup(num_threads=4)
+setup(num_threads=5)
+#~ dt = 0.5
+#~ setup(dt=dt)
 
 #
 #---
@@ -47,11 +49,11 @@ graph = GraphClass(dicGraph)
 #------------------------------
 
 #~ pop = Population(geometry=1000, neuron=IF_curr_exp)
-#~ pop.set({'tau_refrac': 5})
-#~ pop.noise = 2.0
-pop = Population(name='Exc', geometry=1000, neuron=Izhikevich)
+#~ pop.set({'tau_refrac': 2})
+#~ pop.noise = 5
+pop = Population(name='pop', geometry=1000, neuron=Izhikevich)
 re = np.random.random(1000)
-pop.noise = 2.5
+pop.noise = 2.1
 pop.a = 0.02
 pop.b = 0.2
 pop.c = -65.0 + 15.0 * re**2
@@ -88,10 +90,13 @@ projInhib = Projection(
      target = 'inh'
 )
 
-projExc.connect_from_sparse(matExc.tolil(), delays = 3.0)
-projInhib.connect_from_sparse(matInhib.tolil(), delays = 3.0)
+projExc.connect_from_sparse(matExc.tolil(), delays = 2.0)
+projInhib.connect_from_sparse(matInhib.tolil(), delays = 2.0)
 
 compile()
+
+projExc.disable_learning()
+projInhib.disable_learning()
 
 
 #
@@ -99,21 +104,89 @@ compile()
 # Run the simulation
 #------------------------------
 
-# monitoring
+if __name__ == "__main__":
 
-m = Monitor(pop, ['v', 'spike'])
+	#----------#
+	# Activity #
+	#----------#
+	
+	m = Monitor(pop, ['v', 'spike'])
+	rBinDuration = 4. # ms
+	simulate(50000.0)
 
-# simulate
+	#--------------------#
+	# Avalanche analysis #
+	#--------------------#
+	
+	## get the spike informations
+	
+	data = m.get('spike')
+	spike_times, ranks = m.raster_plot(data)
+	print(len(spike_times))
+	arrArgsTimeSort = np.argsort(spike_times)
+	spike_times = spike_times[arrArgsTimeSort]
+	ranks = ranks[arrArgsTimeSort]
+	idxLastSpike = len(spike_times)-1
 
-simulate(10000.0)
+	if idxLastSpike != -1:
 
+		## group the avalanches
+		
+		lstAvalancheSizes = []
+		lstAvalancheDurations = []
+		idxAvalancheStart = -1
+		rAvalancheStartTime = spike_times[0]
+		for idx,time in enumerate(spike_times[1:]):
+			if time-rAvalancheStartTime > rBinDuration and idx != idxLastSpike:
+				lstAvalancheSizes.append(idx-idxAvalancheStart)
+				lstAvalancheDurations.append(spike_times[idx]-rAvalancheStartTime + rBinDuration)
+				idxAvalancheStart = idx
+				rAvalancheStartTime = time
+			elif idx == idxLastSpike:
+				lstAvalancheSizes.append(idx-idxAvalancheStart)
+				lstAvalancheDurations.append(time-rAvalancheStartTime)
 
-# plot
-data = m.get('spike')
-spike_times, ranks = m.raster_plot(data)
-ax = plt.subplot(2,1,1)
-ax.plot(spike_times, ranks, 'b.', markersize=1.0)
-# Second plot: membrane potential of a single excitatory cell
-ax = plt.subplot(2,1,2)
-ax.plot(m.get('v')[:, 15])
-plt.show()
+		print("{}\n{}".format(lstAvalancheDurations[:10],lstAvalancheSizes[:10]))
+
+		## histogram
+		
+		numBins = len(lstAvalancheDurations) / 2
+		
+		nMinSize = np.amin(lstAvalancheSizes)
+		nMaxSize = np.amax(lstAvalancheSizes)
+		arrBins = np.logspace(np.log10(nMinSize), np.log10(nMaxSize), numBins)
+		arrCountsSizes, arrSizes = np.histogram(lstAvalancheSizes, arrBins)
+		print(arrCountsSizes[:10], arrSizes[:10])
+
+		rMinDuration = np.amin(lstAvalancheDurations)
+		rMaxDuration = np.amax(lstAvalancheDurations)
+		arrBins = np.logspace(np.log10(rMinDuration), np.log10(rMaxDuration), numBins)
+		arrCountsDurations, arrDurations = np.histogram(lstAvalancheDurations, arrBins)
+
+		#----------#
+		# Plotting #
+		#----------#
+
+		## Durations and sizes
+
+		figScaling = plt.figure()
+		axSizeVsDuration = plt.subplot(2,2,1)
+		axSizeVsDuration.loglog(lstAvalancheDurations, lstAvalancheSizes)
+
+		axSizeHisto = plt.subplot(2,2,2)
+		axSizeHisto.loglog(arrSizes[:-1], arrCountsSizes)
+		
+		axDurationHisto = plt.subplot(2,2,3)
+		axDurationHisto.loglog(arrDurations[:-1], arrCountsDurations)
+
+		## raster
+
+		figRaster = plt.figure()
+		axRaster1 = plt.subplot(2,1,1)
+		axRaster1.plot(spike_times, ranks, 'b.', markersize=1.0)
+		
+		## Second plot: membrane potential of a single excitatory cell
+		
+		axRaster2 = plt.subplot(2,1,2)
+		axRaster2.plot(m.get('v')[:, 15])
+		plt.show()
